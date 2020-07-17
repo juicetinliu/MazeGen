@@ -136,8 +136,6 @@ class Wall{
     fill(0,255,255);
     if(orientation){
       rect(0,0,cellSpacing*0.2,cellSpacing*1.2);
-      //triangle(0,cellSpacing*0.5,cellSpacing*0.1,cellSpacing*0.4,-cellSpacing*0.1,cellSpacing*0.4);
-      //triangle(0,-cellSpacing*0.5,cellSpacing*0.1,-cellSpacing*0.4,-cellSpacing*0.1,-cellSpacing*0.4);
     }else{
       rect(0,0,cellSpacing*1.2,cellSpacing*0.2);
     }
@@ -154,37 +152,11 @@ void initialiseCellWalls(int x, int y, int cellSpacing){
       CellGrid[i][j] = null;
     }
   }
-  //Cell firstCell = new Cell(0,0);
-  //createNeighBourCellWalls(firstCell, x, y, cellSpacing);
   createNeighbourCellWalls(amountX, amountY);
   println(Cells.size());
   println(Walls.size());
   
 }
-
-//void createNeighBourCellWalls(Cell thisCell, int boundx, int boundy, int cellSpacing){
-//  Cells.add(thisCell);
-//  int x = thisCell.x;
-//  int y = thisCell.y;
-//  println(x,y, Cells.size());
-//  CellGrid[x][y] = thisCell;
-//  Cell upCell = ((y - 1)*cellSpacing >= 0 && CellGrid[x][y-1] == null)? new Cell(x,y-1): null;
-//  if(upCell != null){
-//    createNeighBourCellWalls(upCell, boundx, boundy, cellSpacing);
-//  }
-//  Cell downCell = ((y + 1)*cellSpacing < boundy && CellGrid[x][y+1] == null)? new Cell(x,y+1): null;
-//  if(downCell != null){
-//    createNeighBourCellWalls(downCell, boundx, boundy, cellSpacing);
-//  }
-//  Cell leftCell = ((x - 1)*cellSpacing >= 0 && CellGrid[x-1][y] == null)? new Cell(x-1,y): null;
-//  if(leftCell != null){
-//    createNeighBourCellWalls(leftCell, boundx, boundy, cellSpacing);
-//  }
-//  Cell rightCell = ((x + 1)*cellSpacing < boundx && CellGrid[x+1][y] == null)? new Cell(x+1,y): null;
-//  if(rightCell != null){
-//    createNeighBourCellWalls(rightCell, boundx, boundy, cellSpacing);
-//  }
-//}
 
 void createNeighbourCellWalls(int amountX, int amountY){
   for(int i = 0; i < amountX; i++){

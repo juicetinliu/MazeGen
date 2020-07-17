@@ -10,24 +10,27 @@ ArrayList<Cell> unvisitedCells = new ArrayList<Cell>();
 ArrayList<Cell> stackCells = new ArrayList<Cell>();
 boolean initialize = true;
 
-int CellSpacing = 2;
+int CellSpacing = 50;
 
 void setup(){
   size(500,500);
   pixelDensity(displayDensity());
   initialiseCellWalls(500,500, CellSpacing);
   currCell = CellGrid[0][0];
+  //========== instant generation ==========
   //generateMazeKruskal(false);
   //generateMazePrim(false);
-  generateMazeDepth(false);
+  //generateMazeDepth(false);
 }
 
 void draw(){
   background(0);
   noStroke();
-  //generateMazeKruskal(true);
+  //========== stepped generation ==========
+  generateMazeKruskal(true); 
   //generateMazePrim(true);
   //generateMazeDepth(true);
+  
   for(Cell thisCell:Cells){
     thisCell.display(CellSpacing);
   }
@@ -70,6 +73,16 @@ void generateMazeKruskal(boolean step){ //true for step, false for instant
     }
     unusedWalls.remove(chosenWall);
   }
+}
+
+boolean allCellConnected(){ //helper function for Kruskal's algorithm
+  int set1 = Cells.get(0).set;
+  for(int i = 1; i < Cells.size(); i++){
+    if(set1 != Cells.get(i).set){
+      return false;
+    }
+  }
+  return true;
 }
 
 void generateMazePrim(boolean step){//true for step, false for instant
@@ -131,13 +144,11 @@ void generateMazeDepth(boolean step){ //true for step, false for instant
     for(int i = 0; i < Cells.size(); i++){
       Cells.get(i).setSet(0); // 0 is unvisited
     }
-    //for(Wall thisWall:Walls){
-    //  unusedWalls.add(thisWall);
-    //}
     Cell initial = Cells.get(0);
     stackCells.add(initial);
     initial.setSet(1); // 1 is visited
   }
+  
   boolean waitForStep = true;
   while(stackCells.size() > 0 && waitForStep){
     if(step){
@@ -181,18 +192,10 @@ void generateMazeDepth(boolean step){ //true for step, false for instant
   println(stackCells.size());
 }
 
-boolean allCellConnected(){
-  int set1 = Cells.get(0).set;
-  for(int i = 1; i < Cells.size(); i++){
-    if(set1 != Cells.get(i).set){
-      return false;
-    }
-  }
-  return true;
-}
 
 
-void keyPressed(){
+
+void keyPressed(){ //play the maze!
   //setMove(keyCode, true);
   if(key == 'w'){
     if(currCell.upWall == null && currCell.up != null){
