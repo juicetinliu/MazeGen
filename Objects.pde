@@ -62,9 +62,21 @@ class Cell{
     pushMatrix();
     rectMode(CORNER);
     translate(x*cellSpacing,y*cellSpacing);
-    fill(255,50);
+    if(mouseX > x * cellSpacing && mouseX < (x + 1) * cellSpacing && mouseY > y * cellSpacing && mouseY < (y + 1) * cellSpacing){
+      fill(255,100);
+    }else{
+      fill(255,50);
+    }
     rect(cellSpacing*0.1,cellSpacing*0.1,cellSpacing*0.8,cellSpacing*0.8);
     popMatrix();
+  }
+  
+  boolean mouseWithin(float cellSpacing){
+    if(mouseX > x * cellSpacing && mouseX < (x + 1) * cellSpacing && mouseY > y * cellSpacing && mouseY < (y + 1) * cellSpacing){
+      return true;
+    }else{
+      return false;
+    }
   }
   
   void setSet(int i){

@@ -10,17 +10,21 @@ ArrayList<Cell> unvisitedCells = new ArrayList<Cell>();
 ArrayList<Cell> stackCells = new ArrayList<Cell>();
 boolean initialize = true;
 
-int CellSpacing = 10;
+int CellSpacing = 5;
+
+Pathfinder josht;
 
 void setup(){
+  randomSeed(1);
   size(500,500);
   pixelDensity(displayDensity());
   initialiseCellWalls(500,500, CellSpacing);
   currCell = CellGrid[0][0];
+  josht = new Pathfinder(currCell);
   //========== instant generation ==========
-  //generateMazeKruskal(false);
+  generateMazeKruskal(false);
   //generateMazePrim(false);
-  generateMazeDepth(false);
+  //generateMazeDepth(false);
 }
 
 void draw(){
@@ -40,6 +44,9 @@ void draw(){
   rectMode(CORNER);
   fill(255,0,0);
   rect(currCell.x*CellSpacing,currCell.y*CellSpacing,CellSpacing,CellSpacing);
+  
+  josht.run();
+  josht.display(CellSpacing);
 }
 
 
@@ -191,6 +198,25 @@ void generateMazeDepth(boolean step){ //true for step, false for instant
   }
 }
 
+void mousePressed(){
+  for(Cell thisCell:Cells){
+    if(thisCell.mouseWithin(CellSpacing)){
+      if(josht.targetCell == thisCell){
+        josht.targetCell = null;
+        break;
+      }else{
+        josht.targetCell = currCell;
+        josht.openList.clear();
+        josht.closedList.clear();
+        josht.costs.clear();
+        josht.openList.add(josht.currCell);
+        josht.costs.append(0);
+        josht.NOTDONE = true;
+        break;
+      }
+    }
+  }
+}
 
 
 
