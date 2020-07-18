@@ -10,7 +10,7 @@ ArrayList<Cell> unvisitedCells = new ArrayList<Cell>();
 ArrayList<Cell> stackCells = new ArrayList<Cell>();
 boolean initialize = true;
 
-int CellSpacing = 50;
+int CellSpacing = 10;
 
 void setup(){
   size(500,500);
@@ -20,14 +20,14 @@ void setup(){
   //========== instant generation ==========
   //generateMazeKruskal(false);
   //generateMazePrim(false);
-  //generateMazeDepth(false);
+  generateMazeDepth(false);
 }
 
 void draw(){
   background(0);
   noStroke();
   //========== stepped generation ==========
-  generateMazeKruskal(true); 
+  //generateMazeKruskal(true); 
   //generateMazePrim(true);
   //generateMazeDepth(true);
   
@@ -189,7 +189,6 @@ void generateMazeDepth(boolean step){ //true for step, false for instant
       stackCells.add(chosenCell);
     }
   }
-  println(stackCells.size());
 }
 
 
