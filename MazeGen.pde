@@ -10,7 +10,7 @@ ArrayList<Cell> unvisitedCells = new ArrayList<Cell>();
 ArrayList<Cell> stackCells = new ArrayList<Cell>();
 boolean initialize = true;
 
-int CellSpacing = 5;
+int CellSpacing = 10;
 
 Pathfinder josht;
 
@@ -205,7 +205,7 @@ void mousePressed(){
         josht.targetCell = null;
         break;
       }else{
-        josht.targetCell = currCell;
+        josht.targetCell = thisCell;
         josht.openList.clear();
         josht.closedList.clear();
         josht.costs.clear();
