@@ -12,12 +12,13 @@ let initialize = true;
 
 let CellSpacing = 25;
 let josht;
-let canvasWidth = 1000, canvasHeight = 500;
+let canvasWidth = 1000, canvasHeight = 700;
+let mazeWidth = 1000, mazeHeight = 500;
 function setup(){
   randomSeed(1);
-  //createCanvas(displayWidth * 0.8, displayHeight * 0.8);
+  //createCanvas(windowWidth, windowHeight);
   createCanvas(canvasWidth, canvasHeight);
-  initialiseCellWalls(canvasWidth, canvasHeight, CellSpacing);
+  initialiseCellWalls(mazeWidth, mazeHeight, CellSpacing);
   currCell = CellGrid[0][0];
   josht = new Pathfinder(currCell);
   //========== instant generation ==========
@@ -27,13 +28,17 @@ function setup(){
 }
 
 function draw(){
-  background(0);
-  noStroke();
+  rectMode(CORNER);
+  fill(0);
+  stroke('#aaf1f2');
+  strokeWeight(5);
+  rect(0,0,mazeWidth, mazeHeight);
+  drawInterface();
   //========== stepped generation ==========
   //generateMazeKruskal(true); 
   //generateMazePrim(true);
   //generateMazeDepth(true);
-  
+  noStroke();
   Cells.forEach(thisCell => {thisCell.display(CellSpacing);});
   Walls.forEach(thisWall => {thisWall.display(CellSpacing);});
   rectMode(CORNER);
@@ -44,8 +49,12 @@ function draw(){
   josht.display(CellSpacing);
 }
 
+//function windowResized() {
+//  resizeCanvas(windowWidth, windowHeight);
+//}
 
-
+function drawInterface(){
+}
 
 function generateMazeKruskal(step){ //true for step, false for instant
   //Randomized Kruskal's algorithm
@@ -204,38 +213,18 @@ function mousePressed(){
         if(josht.targetCell === thisCell){
           josht.targetCell = null;
           Cells.forEach(thisCell => {thisCell.resetChildrenParents();});
-          josht.initialCell = josht.currCell;
-          josht.actualPath = [];
-          josht.openList = [];
-          josht.closedList = [];
-          josht.costs = [];
-          josht.openList.push(josht.currCell);
-          josht.costs.push(0);
-          josht.counter = 0;
-          josht.pathCounter = 0;
-          josht.NOTDONE = true;
+          josht.reset();
           return;
         }else{
-          Cells.forEach(thisCell => {thisCell.resetChildrenParents();});
-          josht.initialCell = josht.currCell;
-          josht.actualPath = [];
           josht.targetCell = thisCell;
-          josht.openList = [];
-          josht.closedList = [];
-          josht.costs = [];
-          josht.openList.push(josht.currCell);
-          josht.costs.push(0);
-          josht.counter = 0;
-          josht.pathCounter = 0;
-          josht.NOTDONE = true;
+          Cells.forEach(thisCell => {thisCell.resetChildrenParents();});
+          josht.reset();
           return;
         }
       }
     }
   });
 }
-
-
 
 function keyPressed(){ //play the maze!
   //setMove(keyCode, true);
@@ -495,6 +484,19 @@ class Pathfinder{
     this.pathCounter = 0;
     this.openList.push(initial);
     this.costs.push(0);
+  }
+
+  reset(){
+    this.initialCell = this.currCell;
+    this.actualPath = [];
+    this.openList = [];
+    this.closedList = [];
+    this.costs = [];
+    this.openList.push(this.currCell);
+    this.costs.push(0);
+    this.counter = 0;
+    this.pathCounter = 0;
+    this.NOTDONE = true;
   }
   
   display(cellSpacing){
