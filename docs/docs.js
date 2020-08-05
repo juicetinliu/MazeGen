@@ -261,3 +261,352 @@ function keyPressed(){ //play the maze!
   }
   //console.log(currCell);
 }
+
+class Cell {
+  constructor(x, y) {
+    this.x = x; 
+    this.y = y;
+    this.up = null;
+    this.down = null;
+    this.left = null;
+    this.right = null;
+    this.upWall = null;
+    this.downWall = null;
+    this.leftWall = null;
+    this.rightWall = null;
+    //pathfinding-use
+    this.children = [];
+    this.parent = null;
+  }
+  
+  setChildren(childs){
+    this.children = childs;
+    childs.forEach(child => {
+      if(child.parent === null){
+        child.parent = this;
+      }
+    });
+  }
+  
+  resetChildrenParents(){
+    this.children = [];
+    this.parent = null;
+  }
+  
+  addNeighbours(up, down, left, right){
+    this.up = up;
+    if(up != null){
+      if(up.downWall === null){
+        let newUpWall = new Wall(this, up, false);
+        Walls.push(newUpWall);
+        this.upWall = newUpWall;
+      }else{
+        this.upWall = up.downWall;
+      }
+    }    
+    this.down = down;
+    if(down != null){
+      if(down.upWall === null){
+        let newDownWall = new Wall(this, down, false);
+        Walls.push(newDownWall);
+        this.downWall = newDownWall;
+      }else{
+        this.downWall = down.upWall;
+      }
+    }
+    this.left = left;
+    if(left != null){
+      if(left.rightWall === null){
+        let newLeftWall = new Wall(this, left, true);
+        Walls.push(newLeftWall);
+        this.leftWall = newLeftWall;
+      }else{
+        this.leftWall = left.rightWall;
+      }
+    }
+    this.right = right;
+    if(right != null){
+      if(right.leftWall === null){
+        let newRightWall = new Wall(this, right, true);
+        Walls.push(newRightWall);
+        this.rightWall = newRightWall;
+      }else{
+        this.rightWall = right.leftWall;
+      }
+    }
+  }
+  
+  display(cellSpacing){
+    push();
+    rectMode(CORNER);
+    translate(this.x*cellSpacing,this.y*cellSpacing);
+    if(mouseX > this.x * cellSpacing && mouseX < (this.x + 1) * cellSpacing && mouseY > this.y * cellSpacing && mouseY < (this.y + 1) * cellSpacing){
+      fill(255,100);
+    }else{
+      fill(255,50);
+    }
+    rect(cellSpacing*0.1,cellSpacing*0.1,cellSpacing*0.8,cellSpacing*0.8);
+    pop();
+  }
+  
+  mouseWithin(cellSpacing){
+    if(mouseX > this.x * cellSpacing && mouseX < (this.x + 1) * cellSpacing && mouseY > this.y * cellSpacing && mouseY < (this.y + 1) * cellSpacing){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  
+  setSet(i){
+    this.set = i;
+  }
+  
+  setCellSet(set){
+    if(this.set !== set){
+      this.set = set;
+    }
+    if(this.upWall === null && this.up !== null){
+      if(this.up.set !== set){
+        this.up.setCellSet(set);
+      }
+    }
+    if(this.downWall === null && this.down !== null){
+      if(this.down.set !== set){
+        this.down.setCellSet(set);
+      }
+    }
+    if(this.leftWall === null && this.left !== null){
+      if(this.left.set !== set){
+        this.left.setCellSet(set);
+      }
+    }
+    if(this.rightWall === null && this.right !== null){
+      if(this.right.set !== set){
+        this.right.setCellSet(set);
+      }
+    }
+  }
+  
+  
+  
+  matchWalls(){
+    if(Walls.indexOf(this.upWall) === -1){
+      this.upWall = null;
+    }
+    if(Walls.indexOf(this.downWall) === -1){
+      this.downWall = null;
+    }
+    if(Walls.indexOf(this.leftWall) === -1){
+      this.leftWall = null;
+    }
+    if(Walls.indexOf(this.rightWall) === -1){
+      this.rightWall = null;
+    }
+  }
+}
+
+class Wall{
+  constructor(cell1, cell2, orien) {
+    this.cellA = cell1;
+    this.cellB = cell2;
+    this.orientation = orien;
+    this.x = float(cell1.x + cell2.x + 1)/2;
+    this.y = float(cell1.y + cell2.y + 1)/2;
+  }
+  
+  display(cellSpacing){
+    push();
+    rectMode(CENTER);
+    translate(this.x*cellSpacing,this.y*cellSpacing);
+    fill('#aaf1f2');
+    if(this.orientation){
+      rect(0,0,cellSpacing*0.2,cellSpacing*1.2);
+    }else{
+      rect(0,0,cellSpacing*1.2,cellSpacing*0.2);
+    }
+    pop();
+  }
+}
+
+function initialiseCellWalls(x, y, cellSpacing){
+  let amountX = (x - x%cellSpacing)/cellSpacing;
+  let amountY = (y - y%cellSpacing)/cellSpacing;
+  CellGrid = createArray(amountX, amountY);
+  for(let i = 0; i < amountX; i++){
+    for(let j = 0; j < amountY; j++){
+      CellGrid[i][j] = null;
+    }
+  }
+  createNeighbourCellWalls(amountX, amountY);
+  //console.log(Cells.length);
+  //console.log(Walls.length);
+  //console.log(CellGrid);
+}
+
+function createArray(len) {
+    var arr = new Array(len || 0),
+        i = len;
+
+    if (arguments.length > 1) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        while(i--){ arr[len-1 - i] = createArray.apply(this, args);}
+    }
+    return arr;
+}
+
+
+function createNeighbourCellWalls(amountX, amountY){
+  for(let i = 0; i < amountX; i++){
+    for(let j = 0; j < amountY; j++){
+      let thisCell = new Cell(i, j);
+      Cells.push(thisCell);
+      CellGrid[i][j] = thisCell;
+    }
+  }
+  for(let i = 0; i < amountX; i++){
+    for(let j = 0; j < amountY; j++){
+      let thisCell = CellGrid[i][j];
+
+      let upCell = (j-1 >= 0)? CellGrid[i][j-1] : null;
+      let downCell = (j+1 < amountY)? CellGrid[i][j+1] : null;
+      let leftCell = (i-1 >= 0)? CellGrid[i-1][j] : null;
+      let rightCell = (i+1 < amountX)? CellGrid[i+1][j] : null;
+      thisCell.addNeighbours(upCell, downCell, leftCell, rightCell);
+    }
+  }
+}
+
+class Pathfinder{
+  constructor(initial) {
+    this.initialCell = initial;
+    this.currCell = initial;
+    this.targetCell = null;
+    this.NOTDONE = true;
+    this.openList = [];
+    this.costs = [];
+    this.closedList = [];
+    this.actualPath = [];
+    this.counter = 0;
+    this.pathCounter = 0;
+    this.openList.push(initial);
+    this.costs.push(0);
+  }
+  
+  display(cellSpacing){
+    rectMode(CORNER);
+    if(this.targetCell !== null){
+      fill(255,255,0);
+      rect(this.targetCell.x*cellSpacing,this.targetCell.y*cellSpacing,cellSpacing,cellSpacing);
+    }
+    fill(255,0,255);
+    rect(this.currCell.x*cellSpacing,this.currCell.y*cellSpacing,cellSpacing,cellSpacing);
+    
+    if(this.NOTDONE){
+      this.closedList.forEach(pathCell => {
+        fill('#ebf2aa');
+        rect((pathCell.x+0.1)*cellSpacing,(pathCell.y+0.1)*cellSpacing,cellSpacing*0.8,cellSpacing*0.8);
+      });
+    }else{
+      //this.actualPath.forEach(pathCell => {
+      //  fill('#F06386');
+      //  rect((pathCell.x+0.1)*cellSpacing,(pathCell.y+0.1)*cellSpacing,cellSpacing*0.8,cellSpacing*0.8);
+      //});
+    }
+  }
+  
+  run(){
+    if(this.targetCell !== null){
+      this.iterate();
+    }
+    if(!this.NOTDONE){
+      this.moveAlongPath();
+    }
+  }
+  
+  moveAlongPath(){
+    this.counter++;
+    if(this.currCell !== this.targetCell && this.counter % 5 === 0){
+      this.currCell = this.actualPath[this.pathCounter];
+      this.pathCounter++;
+    }
+  }
+  
+  backTrack(){
+    while(this.currCell !== this.initialCell){
+      this.actualPath.unshift(this.currCell);
+      this.currCell = this.currCell.parent;
+    }
+  }
+  
+  iterate(){
+    //this.counter++;  && this.counter % 1 === 0
+    while(this.openList.length > 0 && this.NOTDONE){
+      let minInd = indexOfSmallest(this.costs);
+      this.currCell = this.openList[minInd];
+      this.openList.splice(minInd,1);
+      this.costs.splice(minInd, 1);
+      this.closedList.push(this.currCell);
+      
+      if(this.currCell === this.targetCell){
+        console.log("DONE");
+        this.backTrack();
+        this.NOTDONE = false;
+      }else{
+        let neighbours = [];
+        let neighbourCosts = [];
+        if(this.currCell.up !== null && this.currCell.upWall === null){
+          neighbours.push(this.currCell.up);
+        }
+        if(this.currCell.down !== null && this.currCell.downWall === null){
+          neighbours.push(this.currCell.down);
+        }
+        if(this.currCell.left !== null && this.currCell.leftWall === null){
+          neighbours.push(this.currCell.left);
+        }
+        if(this.currCell.right !== null && this.currCell.rightWall === null){
+          neighbours.push(this.currCell.right);
+        }
+        
+        this.currCell.setChildren(neighbours);
+        
+        neighbours.forEach(neighbourCell => {
+          if(this.closedList.indexOf(neighbourCell) === -1){
+            let fCost = gCost(this.currCell, neighbourCell) + hCost(this.targetCell, neighbourCell);
+            neighbourCosts.push(fCost);
+            
+            let openListNeighbourInd = this.openList.indexOf(neighbourCell);
+            if(openListNeighbourInd !== -1){
+              let hCostNeighbour = hCost(this.targetCell,neighbourCell);
+              if(fCost - hCostNeighbour < this.costs[openListNeighbourInd] - hCostNeighbour){
+                this.openList.push(neighbourCell);
+                this.costs.push(fCost);
+              }
+            }else{
+              this.openList.push(neighbourCell);
+              this.costs.push(fCost);
+            }
+          }
+        });
+      
+      
+      }
+    }
+  }
+}
+
+function gCost(startCell, currCell){
+  return abs(startCell.x - currCell.x) + abs(startCell.y - currCell.y);
+  
+}
+
+function hCost(endCell, currCell){
+  return dist(endCell.x, endCell.y, currCell.x,  currCell.y);
+}
+
+function indexOfSmallest(a) {
+  let lowest = 0;
+  for (let i = 1; i < a.length; i++) {
+   if (a[i] < a[lowest]) lowest = i;
+  }
+  return lowest;
+ }
