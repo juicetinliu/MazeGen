@@ -11,13 +11,13 @@ let stackCells = [];
 let initialize = true;
 
 let CellSpacing = 10;
-
+let josht;
 function setup(){
   randomSeed(1);
   createCanvas(500, 500);
   initialiseCellWalls(500,500, CellSpacing);
   currCell = CellGrid[0][0];
-  //josht = new Pathfinder(currCell);
+  josht = new Pathfinder(currCell);
   //========== instant generation ==========
   generateMazeKruskal(false);
   //generateMazePrim(false);
@@ -38,8 +38,8 @@ function draw(){
   fill(255,0,0);
   rect(currCell.x*CellSpacing,currCell.y*CellSpacing,CellSpacing,CellSpacing);
   
-  //josht.run();
-  //josht.display(CellSpacing);
+  josht.run();
+  josht.display(CellSpacing);
 }
 
 
@@ -198,20 +198,19 @@ function generateMazeDepth(step){ //true for step, false for instant
 function mousePressed(){
   Cells.forEach(thisCell => {
     if(thisCell.mouseWithin(CellSpacing)){
-      //if(josht.targetCell == thisCell){
-      //  josht.targetCell = null;
-      //  return;
-      //}else{
-      //  josht.targetCell = thisCell;
-      //  josht.openList.clear();
-      //  josht.closedList.clear();
-      //  josht.costs.clear();
-      //  josht.openList.add(josht.currCell);
-      //  josht.costs.append(0);
-      //  josht.NOTDONE = true;
-      //  return;
-      //}
-      console.log(thisCell);
+      if(josht.targetCell === thisCell){
+        josht.targetCell = null;
+        return;
+      }else{
+        josht.targetCell = thisCell;
+        josht.openList = [];
+        josht.closedList = [];
+        josht.costs = [];
+        josht.openList.push(josht.currCell);
+        josht.costs.push(0);
+        josht.NOTDONE = true;
+        return;
+      }
     }
   });
 }
@@ -439,3 +438,116 @@ function createNeighbourCellWalls(amountX, amountY){
     }
   }
 }
+
+class Pathfinder{
+  constructor(initial) {
+    this.currCell = initial;
+    this.targetCell = null;
+    this.NOTDONE = true;
+    this.openList = [];
+    this.costs = [];
+    this.closedList = [];
+    this.counter = 0;
+    this.openList.push(initial);
+    this.costs.push(0);
+  }
+  
+  display(cellSpacing){
+    rectMode(CORNER);
+    if(this.targetCell !== null){
+      fill(255,255,0);
+      rect(this.targetCell.x*cellSpacing,this.targetCell.y*cellSpacing,cellSpacing,cellSpacing);
+    }
+    fill(255,0,255);
+    rect(this.currCell.x*cellSpacing,this.currCell.y*cellSpacing,cellSpacing,cellSpacing);
+    
+    this.closedList.forEach(pathCell => {
+      fill(100,255,100);
+      rect((pathCell.x+0.1)*cellSpacing,(pathCell.y+0.1)*cellSpacing,cellSpacing*0.8,cellSpacing*0.8);
+    });
+  }
+  
+  run(){
+    if(this.targetCell !== null){
+      this.iterate();
+    }
+  }
+  
+  iterate(){
+    this.counter++;
+    if(this.openList.length > 0 && this.NOTDONE && this.counter % 1 === 0){
+      let minInd = indexOfSmallest(this.costs);
+      this.currCell = this.openList[minInd];
+      this.openList.splice(minInd,1);
+      this.costs.splice(minInd, 1);
+      this.closedList.push(this.currCell);
+      
+      if(this.currCell === this.targetCell){
+        console.log("DONE");
+        this.NOTDONE = false;
+      }else{
+        let neighbours = [];
+        let neighbourCosts = [];
+        if(this.currCell.up !== null && this.currCell.upWall === null){
+          neighbours.push(this.currCell.up);
+        }
+        if(this.currCell.down !== null && this.currCell.downWall === null){
+          neighbours.push(this.currCell.down);
+        }
+        if(this.currCell.left !== null && this.currCell.leftWall === null){
+          neighbours.push(this.currCell.left);
+        }
+        if(this.currCell.right !== null && this.currCell.rightWall === null){
+          neighbours.push(this.currCell.right);
+        }
+        
+        neighbours.forEach(neighbourCell => {
+          if(this.closedList.indexOf(neighbourCell) === -1){
+            let fCost = gCost(this.currCell, neighbourCell) + hCost(this.targetCell, neighbourCell);
+            neighbourCosts.push(fCost);
+            
+            let openListNeighbourInd = this.openList.indexOf(neighbourCell);
+            if(openListNeighbourInd !== -1){
+              let hCostNeighbour = hCost(this.targetCell,neighbourCell);
+              if(fCost - hCostNeighbour < this.costs[openListNeighbourInd] - hCostNeighbour){
+                this.openList.push(neighbourCell);
+                this.costs.push(fCost);
+              }
+            }else{
+              this.openList.push(neighbourCell);
+              this.costs.push(fCost);
+            }
+          }
+        });
+      
+      
+      }
+    }
+    //if(!NOTDONE){
+    //  openList.clear();
+    //  closedList.clear();
+    //  costs.clear();
+    //  openList.add(currCell);
+    //  costs.append(0);
+    //  targetCell = null;
+    //  NOTDONE = true;
+    //}
+  }
+}
+
+function gCost(startCell, currCell){
+  return abs(startCell.x - currCell.x) + abs(startCell.y - currCell.y);
+  
+}
+
+function hCost(endCell, currCell){
+  return dist(endCell.x, endCell.y, currCell.x,  currCell.y);
+}
+
+function indexOfSmallest(a) {
+  let lowest = 0;
+  for (let i = 1; i < a.length; i++) {
+   if (a[i] < a[lowest]) lowest = i;
+  }
+  return lowest;
+ }
