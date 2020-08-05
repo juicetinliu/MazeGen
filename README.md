@@ -1,2 +1,2 @@
 # MazeGen
- Maze Generator with Processing
+ Maze Generator and PathFinder with Processing
