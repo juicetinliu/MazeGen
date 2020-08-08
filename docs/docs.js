@@ -40,7 +40,7 @@ function setup(){
 function draw(){
   rectMode(CORNER);
   fill(50);
-  stroke('#aaf1f2');
+  stroke('#6db8ed');
   strokeWeight(5);
   rect(0,0,mazeWidth, mazeHeight);
   //========== stepped generation ==========

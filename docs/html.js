@@ -1,15 +1,20 @@
 function setupHTML(){
+  let maincontainer = createDiv();
+  maincontainer.class('main');
+
   let canvcontainer = createDiv();
   canvcontainer.class('container');
+  canvcontainer.parent(maincontainer);
   
   let canv = createCanvas(canvasWidth, canvasHeight);
   canv.parent(canvcontainer);
   
   let containerSidePanel = createDiv();
-  containerSidePanel.class('vert');
+  containerSidePanel.class('side vert');
+  containerSidePanel.parent(maincontainer);
   
   let containerTextPanel = createDiv();
-  containerTextPanel.class('container');
+  containerTextPanel.class('container vert');
   containerTextPanel.parent(containerSidePanel);
   
   let text1 = createDiv('Click cell to set target for A* bot');
@@ -61,4 +66,24 @@ function setupHTML(){
   mainButton.class('butts generate');
   mainButton.mousePressed(genMaze);
   mainButton.parent(containerGenPanel);
+  
+  let containerBottom = createDiv();
+  containerBottom.class('bot hor');
+  containerBottom.parent(containerSidePanel);
+  
+  let gitButton = createA('https://github.com/juicetinliu/MazeGen', '', target="_blank" );
+  gitButton.class('butts icon');
+  gitButton.parent(containerBottom);
+  
+  let p5Button = createA('https://p5js.org', '', target="_blank" );
+  p5Button.class('butts icon');
+  p5Button.parent(containerBottom);
+
+  let gitIcon = createImg('github.png', 'the p5 magenta asterisk');
+  gitIcon.style('width: 40px');
+  gitIcon.parent(gitButton);
+  
+  let p5Icon = createImg('https://p5js.org/assets/img/asterisk-01.png', 'the p5 magenta asterisk');
+  p5Icon.style('width: 40px');
+  p5Icon.parent(p5Button);
 }

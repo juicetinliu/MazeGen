@@ -152,7 +152,7 @@ class Wall{
     push();
     rectMode(CENTER);
     translate(this.x*cellSpacing,this.y*cellSpacing);
-    fill('#aaf1f2');
+    fill('#6db8ed');
     if(this.orientation){
       rect(0,0,cellSpacing*0.2,cellSpacing*1.2);
     }else{
