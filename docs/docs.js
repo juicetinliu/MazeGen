@@ -17,20 +17,19 @@ let canvasWidth = 1000, canvasHeight = 500;
 let mazeWidth = 1000, mazeHeight = 500;
 
 let instantButton, steppedButton, genTypeSelect;
+let krusSel, primSel, depthSel;
 let genType = 'Kruskal';
 let genTypePre = 'Kruskal';
 let stepGen = false;
+let instant = true;
 
 function setup(){
-  //randomSeed(1);
-  //createCanvas(windowWidth, windowHeight);
   setupHTML();
+  
   initialiseCellWalls(mazeWidth, mazeHeight, CellSpacing);
   
   currCell = CellGrid[0][0];
   josht = new Pathfinder(currCell);
-  
-  
   
   //========== instant generation ==========
   generateMazeKruskal(false);
@@ -59,45 +58,44 @@ function draw(){
   josht.display(CellSpacing);
 }
 
-function setupHTML(){
-  let canv = createCanvas(canvasWidth, canvasHeight);
-  
-  
-  let canvcontainer = createDiv();
-  canvcontainer.class('container');
-  canv.parent(canvcontainer);
-  
-  let containerAll = createDiv();
-  containerAll.class('container vert');
-  
-  let title = createDiv('Generate Maze');
-  title.class('titleCard');
-  title.parent(containerAll);
-  
-  let containerButt = createDiv();
-  containerButt.class('hor');
-  containerButt.parent(containerAll);
-  
-  instantButton = createDiv('Instant');
-  instantButton.class('butts');
-  instantButton.mousePressed(genMaze);
-  instantButton.parent(containerButt);
-  
-  steppedButton = createDiv('Stepped');
-  steppedButton.class('butts');
-  steppedButton.mousePressed(stepGenMaze);
-  steppedButton.parent(containerButt);
-
-  genTypeSelect = createSelect();
-  genTypeSelect.option('Kruskal');
-  genTypeSelect.option('Prim');
-  genTypeSelect.option('Depth');
-  genTypeSelect.selected('Kruskal');
-  genTypeSelect.changed(changeGenType);
-  genTypeSelect.parent(containerAll);
+function changeGenMethod(num){ //change the generation speed type and update css
+  if(num === 1){
+    instantButton.class('butts regularbut selected');  
+    steppedButton.class('butts regularbut');
+    instant = true;
+  }else{
+    instantButton.class('butts regularbut');
+    steppedButton.class('butts regularbut selected');  
+    instant = false;
+  }
 }
 
-function resetGrid() {
+function changeGenAlgo(val){ //change the generation algorithm type and update css
+  genTypePre = val;
+  switch(val){
+    case 'Kruskal':
+      krusSel.class('sel selL selected');
+      primSel.class('sel selC');
+      depthSel.class('sel selR');
+      break;
+    case 'Prim':
+      krusSel.class('sel selL');
+      primSel.class('sel selC selected');
+      depthSel.class('sel selR');
+      break;
+    case 'Depth':
+      krusSel.class('sel selL');
+      primSel.class('sel selC');
+      depthSel.class('sel selR selected');
+      break;
+    default:
+      krusSel.class('sel selL selected');
+      primSel.class('sel selC');
+      depthSel.class('sel selR');
+  }
+}
+
+function resetGrid() { //reset maze generation parameters and pathfinder
   stepGen = false;
   CellGrid = null;
   Cells = [];
@@ -111,31 +109,29 @@ function resetGrid() {
   josht = new Pathfinder(currCell);
 }
 
-function genMaze(){
+function genMaze(){ //generate the maze on main button press
   genType = genTypePre;
   resetGrid();
-  switch(genType){
-    case 'Kruskal':
-      generateMazeKruskal(false);
-      break;
-    case 'Prim':
-      generateMazePrim(false);
-      break;
-    case 'Depth':
-      generateMazeDepth(false);
-      break;
-    default:
-      generateMazeKruskal(false);
+  if(instant){
+    switch(genType){
+      case 'Kruskal':
+        generateMazeKruskal(false);
+        break;
+      case 'Prim':
+        generateMazePrim(false);
+        break;
+      case 'Depth':
+        generateMazeDepth(false);
+        break;
+      default:
+        generateMazeKruskal(false);
+    }
+  }else{
+    stepGen = true;
   }
 }
 
-function stepGenMaze(){
-  genType = genTypePre;
-  resetGrid();
-  stepGen = true;
-}
-
-function stepGenDraw(){
+function stepGenDraw(){ //generates maze in steps
   switch(genType){
     case 'Kruskal':
       generateMazeKruskal(true);
@@ -149,10 +145,6 @@ function stepGenDraw(){
     default:
       generateMazeKruskal(true);
   }
-}
-
-function changeGenType(){
-  genTypePre = genTypeSelect.value();
 }
 
 function generateMazeKruskal(step){ //true for step, false for instant
@@ -335,22 +327,22 @@ function mousePressed(){
 }
 
 function keyPressed(){ //play the maze!
-  if(key === 'w'){
+  if(key === 'w' || key === 'ArrowUp'){
     if(currCell.upWall === null && currCell.up !== null){
       currCell = currCell.up;
     }
   }
-  if(key === 's'){
+  if(key === 's' || key === 'ArrowDown'){
     if(currCell.downWall === null && currCell.down !== null){
       currCell = currCell.down;
     }
   }
-  if(key === 'a'){
+  if(key === 'a' || key === 'ArrowLeft'){
     if(currCell.leftWall === null && currCell.left !== null){
       currCell = currCell.left;
     }
   }
-  if(key === 'd'){
+  if(key === 'd' || key === 'ArrowRight'){
     if(currCell.rightWall === null && currCell.right !== null){
       currCell = currCell.right;
     }

@@ -1,26 +1,11 @@
 html, body {
   height: 100%;
-  background-color: #ececec;
+  background-color: #e9e9e9;
   font-family: Calibri, 'Trebuchet MS', sans-serif;
 }
 
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-select {
-  margin:10px;
-}
-
-.titleCard {
-  box-shadow: -10px -10px 15px rgba(255,255,255,0.5), 10px 10px 15px rgba(100,70,70,0.12);
-  border-radius: 15px;
-  width:250px;
-  height:30px;
-  margin: 0px 15px 15px 15px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,22 +32,88 @@ select {
   align-items: center;
 }
 
-.butts {
+.text {
+  width:240px;
+  margin: 0 10px 0 10px;
+}
+
+.generate {
   background: #6db8ed;
-  width:100px;
+  width:240px;
   height:30px;
+  margin: 10px;
+}
+
+.generate:hover {
+  background: #f0fcfc;
+}
+
+.selected {
+  border: 5px solid #6db8ed;
+  box-sizing: border-box;
+}
+
+.regularbut {
+  background: #f0fcfc;
+  width:110px;
+  height:30px;
+  margin:10px;
+}
+
+.regularbut:hover {
+  background: #bae2ff;
+}
+
+.butts {
   box-shadow: -10px -10px 15px rgba(255,255,255,0.5), 10px 10px 15px rgba(100,70,70,0.12);
   border-radius: 15px;
-  margin:10px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.butts:hover {
+.butts:active {
+  box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5), inset 10px 10px 15px rgba(70,70,70,0.12);
+}
+
+.selL {
+  width:80px;
+  height:30px;
+  margin: 0;
+  border-radius: 15px 0 0 15px ;
+}
+
+.selC {
+  width:78px;
+  height:30px;
+  margin: 0 1px 0 1px;
+}
+
+.selR { 
+  width:80px;
+  height:30px;
+  margin: 0;
+  border-radius: 0 15px 15px 0;
+}
+
+.selcontainer {
+  box-shadow: -10px -10px 15px rgba(255,255,255,0.5), 10px 10px 15px rgba(100,70,70,0.12);
+  border-radius: 15px;
+  margin: 10px;
+  padding: 0px;
+}
+
+.sel {
+  background: #f0fcfc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sel:hover {
   background: #bae2ff;
 }
 
-.butts:active {
+.sel:active {
   box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5), inset 10px 10px 15px rgba(70,70,70,0.12);
 }
