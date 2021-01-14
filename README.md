@@ -1,5 +1,5 @@
 # MazeGen
-Maze Generator and PathFinder with Processing
+Maze generation and pathfinding.
 
 Open this [demo](https://juicetinliu.github.io/MazeGen) in your browser!
 
