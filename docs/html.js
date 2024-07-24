@@ -83,7 +83,7 @@ function setupHTML(){
   gitIcon.style('width: 40px');
   gitIcon.parent(gitButton);
   
-  let p5Icon = createImg('https://p5js.org/assets/img/asterisk-01.png', 'the p5 magenta asterisk');
+  let p5Icon = createImg('https://juicetinliu.github.io/assets/icons/p5.png', 'the p5 magenta asterisk');
   p5Icon.style('width: 40px');
   p5Icon.parent(p5Button);
 }
